@@ -25,7 +25,7 @@
   transition: background-color 0.3s ease;
   width: 120px;
   height: 40px;
-  margin-top: -800px;
+  margin-top: 300px;
 }
 
 .search-form button:hover {

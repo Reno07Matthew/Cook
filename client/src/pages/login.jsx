@@ -5,7 +5,6 @@ import axios from "axios";
 
 function Login() {
     const navigate = useNavigate();
-
     useEffect(() => {
         const wrapper = document.querySelector('.wrapper');
         const loginLink = document.querySelector('.login-link');
@@ -29,42 +28,46 @@ function Login() {
         };
     }, []); // Empty dependency array ensures that this effect runs only once after the initial render
 
-    const [loginInputs, setLoginInputs] = useState({});
-    const [registerInputs, setRegisterInputs] = useState({});
+    // Rest of your component code...
 
-    const handleLoginChange = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setLoginInputs(prevState => ({ ...prevState, [name]: value }));
-    }
+    const [username, setUsername] = useState("");
+    const [dob, setDob] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loginStatus, setLoginStatus] = useState("");
+    const [registerStatus, setRegisterStatus] = useState("");
 
-    const handleRegisterChange = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setRegisterInputs(prevState => ({ ...prevState, [name]: value }));
-    }
-
-    const handleLoginSubmit = (e) => {
+    const register = (e) => {
+        const userData = {
+            username: username,
+            dob: dob,
+            email: email,
+            password: password
+        }
         e.preventDefault();
-        // Your login logic goes here
-        console.log("Login form submitted:", loginInputs);
+        axios.post("http://localhost:3036/register", userData, { headers: { "Content-Type": "application/json" } }).then((response) => {
+            if (response.data.message) {
+                setRegisterStatus(response.data.message);
+            } else {
+                setRegisterStatus("Account created successfully");
+            }
+        })
     }
 
-    const handleRegisterSubmit = (e) => {
+    const login = (e) => {
         e.preventDefault();
-        // Your registration logic goes here
-        console.log("Register form submitted:", registerInputs);
-    
-        axios.post('https://localhost:80/api/', registerInputs)
-            .then(response => {
-                console.log(response.data);
-                // If you want to navigate after successful registration
-                navigate("/");
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
+        axios.post("http://localhost:3036/login", {
+            email: email,
+            password: password
+        }).then((response) => {
+            if (response.data.message) {
+                setLoginStatus(response.data.message);
+            } else {
+                setLoginStatus(response.data[0].email);
+            }
+        })
     }
+
 
     return (
         <div className='loginimg'>
@@ -73,21 +76,21 @@ function Login() {
                     {/* Navigation content */}
                 </nav>
             </header>
-            <div className="wrapper">
+            <div className="wrapper">``
                 <span className="icon-close">
                     <ion-icon name="close"></ion-icon>
                 </span>
                 <div className="form-box login">
                     <h2>Login</h2>
-                    <form onSubmit={handleLoginSubmit}>
+                    <form>
                         <div className="input-box">
                             <span className="icon"><ion-icon name="mail-unread"></ion-icon></span>
-                            <input type="email" required name="loginEmail" onChange={handleLoginChange} />
+                            <input type="email" name="email" onChange={(e) => { setEmail(e.target.value) }} required />
                             <label>Email</label>
                         </div>
                         <div className="input-box">
                             <span className="icon"><ion-icon name="lock-closed"></ion-icon></span>
-                            <input type="password" required name="loginPassword" onChange={handleLoginChange} />
+                            <input type="password" name="password" onChange={(e) => { setPassword(e.target.value) }} required />
                             <label>Password</label>
                         </div>
                         <div className="forgot-password">
@@ -96,7 +99,7 @@ function Login() {
                             </label>
                             <a href="#">Forgot Password</a>
                         </div>
-                        <button type="submit" className="btn">Login</button>
+                        <button type="submit" onClick={login} className="btn">Login</button>
                         <div className="login-register">
                             <p>Don't have an account?
                                 <a href="#" className="register-link">Register</a>
@@ -106,25 +109,25 @@ function Login() {
                 </div>
                 <div id="registrationform" className="form-box Register">
                     <h2>Registration</h2>
-                    <form onSubmit={handleRegisterSubmit}>
+                    <form>
                         <div className="input-box">
                             <span className="icon"><ion-icon name="person"></ion-icon></span>
-                            <input type="text" required name="registerUsername" onChange={handleRegisterChange} />
+                            <input type="text" name="username" onChange={(e) => { setUsername(e.target.value) }} required />
                             <label>Username</label>
                         </div>
                         <div className="input-box">
                             <span className="icon"><ion-icon name="calendar"></ion-icon></span>
-                            <input type="text" required placeholder="dd/mm/yy" name="registerDob" onChange={handleRegisterChange} />
+                            <input type="date" name="dob" onChange={(e) => { setDob(e.target.value) }} required placeholder="yyyy/mm/dd" />
                             <label>DOB</label>
                         </div>
                         <div className="input-box">
                             <span className="icon"><ion-icon name="mail-unread"></ion-icon></span>
-                            <input type="email" required name="registerEmail" onChange={handleRegisterChange} />
+                            <input type="email" name="email" onChange={(e) => { setEmail(e.target.value) }} required />
                             <label>Email</label>
                         </div>
                         <div className="input-box">
                             <span className="icon"><ion-icon name="lock-closed"></ion-icon></span>
-                            <input type="password" required name="registerPassword" onChange={handleRegisterChange} />
+                            <input type="password" name="password" onChange={(e) => { setPassword(e.target.value) }} required />
                             <label>Password</label>
                         </div>
                         <div className="forgot-password">
@@ -132,7 +135,7 @@ function Login() {
                                 I agree to the terms & conditions
                             </label>
                         </div>
-                        <button type="submit" className="btn">Register</button>
+                        <button type="submit" onClick={register} className="btn" >Register</button>
                         <div className="login-register">
                             <p>Already have an account?
                                 <a href="#" className="login-link">Login</a>
@@ -141,7 +144,9 @@ function Login() {
                     </form>
                 </div>
             </div>
-            {/* Script tags are removed */}
+            <script src="login.js"></script>
+            <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+            <script noModule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
         </div>
     );
 }

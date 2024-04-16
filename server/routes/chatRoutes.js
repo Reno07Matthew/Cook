@@ -1,15 +1,15 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const OpenAI = require("openai");
+import { Router, json } from "express";
+import { config } from "dotenv";
+import OpenAI from "openai";
 
-dotenv.config();
+config();
 
-const router = express.Router();
+const router = Router();
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-router.use(express.json()); // Add middleware to parse JSON request bodies
+router.use(json()); // Add middleware to parse JSON request bodies
 
 router.post("/chat", async (req, res) => {
     const { prompt } = req.body;
@@ -39,4 +39,4 @@ router.post("/chat", async (req, res) => {
 });
 
 
-module.exports = router;
+export default router;
